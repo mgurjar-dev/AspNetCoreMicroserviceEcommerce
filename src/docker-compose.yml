@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  catelogdb:
+    image: mongo:4
+  catelog.api:
+    image: ${DOCKER_REGISTRY-}catelogapi
+    build:
+      context: .
+      dockerfile: Services/Catelog/Catelog.API/Dockerfile
+
+volumes:
+  mongo_data:

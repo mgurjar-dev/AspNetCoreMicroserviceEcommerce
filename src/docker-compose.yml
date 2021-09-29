@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  #catelogdb:
-  #  image: mongo:4
+  catelogdb:
+    image: mongo:4
   basketdb:
     image: redis:alpine
 
@@ -20,11 +20,11 @@ services:
   portainer:
     image: portainer/portainer-ce
 
-  #catelog.api:
-  #  image: ${DOCKER_REGISTRY-}catelogapi
-  #  build:
-  #    context: .
-  #    dockerfile: Services/Catelog/Catelog.API/Dockerfile
+  catelog.api:
+    image: ${DOCKER_REGISTRY-}catelogapi
+    build:
+      context: .
+      dockerfile: Services/Catelog/Catelog.API/Dockerfile
 
   basket.api:
     image: ${DOCKER_REGISTRY-}basketapi
@@ -50,11 +50,18 @@ services:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
+  ocelotapigw:
+    image: ${DOCKER_REGISTRY-}ocelotapigw
+    build:
+      context: .
+      dockerfile: ApiGateways/OcelotApiGw/Dockerfile
+
 volumes:
-  #mongo_data:
+  mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 

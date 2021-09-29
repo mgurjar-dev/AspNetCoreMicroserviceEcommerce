@@ -1,13 +1,13 @@
 version: '3.4'
 
 services:
-  #catelogdb:
-  #  container_name: catelogdb
-  #  restart: always
-  #  ports:
-  #    - "27017:27017"
-  #  volumes:
-  #    - mongo_data:/data/db
+  catelogdb:
+    container_name: catelogdb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
   basketdb:
     container_name: basketdb
@@ -57,15 +57,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
 
-  #catelog.api:
-  #  container_name: catelog.api
-  #  environment:
-  #    - "DatabaseSettings:ConnectionString=mongodb://catelogdb:27017"
-  #    - ASPNETCORE_ENVIRONMENT=Development
-  #  depends_on:
-  #    - catelogdb
-  #  ports:
-  #    - "8000:80"
+  catelog.api:
+    container_name: catelog.api
+    environment:
+      - "DatabaseSettings:ConnectionString=mongodb://catelogdb:27017"
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - catelogdb
+    ports:
+      - "8000:80"
 
   basket.api:
     container_name: basket.api
@@ -119,4 +119,17 @@ services:
       - rabbitmq
     ports:
       - "8004:80"
+
+
+  ocelotapigw:
+    container_name: ocelotapigw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+        - catalog.api
+        - basket.api
+        - discount.api
+        - ordering.api
+    ports:
+      - "8010:80"
 

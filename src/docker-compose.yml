@@ -50,11 +50,11 @@ services:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
-  #ocelotapigw:
-  #  image: ${DOCKER_REGISTRY-}ocelotapigw
-  #  build:
-  #    context: .
-  #    dockerfile: ApiGateways/OcelotApiGw/Dockerfile
+  ocelotapigw:
+    image: ${DOCKER_REGISTRY-}ocelotapigw
+    build:
+      context: .
+      dockerfile: ApiGateways/OcelotApiGw/Dockerfile
 
   shopping.aggregator:
     image: ${DOCKER_REGISTRY-}shoppingaggregator
@@ -62,11 +62,18 @@ services:
       context: .
       dockerfile: ApiGateways/Shopping.Aggregator/Shopping.Aggregator/Dockerfile
 
+  aspnetrunbasics:
+    image: ${DOCKER_REGISTRY-}aspnetrunbasics
+    build:
+      context: .
+      dockerfile: WebApps/AspnetRunBasics/Dockerfile
+
 volumes:
   mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 

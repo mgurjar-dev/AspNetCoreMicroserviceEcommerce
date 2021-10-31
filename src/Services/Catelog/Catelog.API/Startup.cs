@@ -1,3 +1,4 @@
+using Catelog.API.Controllers;
 using Catelog.API.Data;
 using Catelog.API.Repository;
 using HealthChecks.UI.Client;
@@ -11,6 +12,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -39,6 +42,20 @@ namespace Catelog.API
             });
             services.AddScoped<ICatelogContext, CatelogContext>();
             services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddOpenTelemetryTracing(config => config
+
+               .AddHttpClientInstrumentation()
+               .AddSource(nameof(CatelogController))
+               .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CatalogTelemetry"))
+               .AddMongoDBInstrumentation()
+               .AddConsoleExporter()
+               .AddZipkinExporter(o =>
+               {
+                   o.Endpoint = new Uri(Configuration["ApiSettings:ZipkinUrl"]);
+
+               })
+               );
 
             services.AddHealthChecks().AddMongoDb(
                             Configuration["DatabaseSettings:ConnectionString"],

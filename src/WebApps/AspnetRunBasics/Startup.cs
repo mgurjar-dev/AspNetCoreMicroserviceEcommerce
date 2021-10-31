@@ -48,9 +48,10 @@ namespace AspnetRunBasics
                 
                 .AddHttpClientInstrumentation()
                 .AddSource(nameof(CatalogService))
-                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CatalogService"))
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ClientTelemetry"))
                 .AddAspNetCoreInstrumentation()
                 .AddSqlClientInstrumentation()
+                .AddMongoDBInstrumentation()
                 .AddConsoleExporter()
                 .AddZipkinExporter(o =>
                 {

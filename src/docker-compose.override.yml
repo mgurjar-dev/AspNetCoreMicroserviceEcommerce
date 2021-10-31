@@ -61,6 +61,7 @@ services:
     container_name: catelog.api
     environment:
       - "DatabaseSettings:ConnectionString=mongodb://catelogdb:27017"
+      - "ApiSettings:ZipkinUrl=http://zipkin:9411/api/v2/spans"
       - ASPNETCORE_ENVIRONMENT=Development
       - "ElasticConfiguration:Uri=http://elasticsearch:9200"
     depends_on:
@@ -155,7 +156,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "ApiSettings:GatewayAddress=http://ocelotapigw"
-      - "ApiSettings:ZikinUrl=http://zipkin"
+      - "ApiSettings:ZikinUrl=http://zipkin/api/v2/spans"
       - "ElasticConfiguration:Uri=http://elasticsearch:9200"
     depends_on:
       #- ocelotapigw

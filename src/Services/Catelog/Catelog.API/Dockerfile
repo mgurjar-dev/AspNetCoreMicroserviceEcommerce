@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Services/Catelog/Catelog.API/Catelog.API.csproj", "Services/Catelog/Catelog.API/"]
+COPY ["BuilidingBlocks/Common.Logging/Common.Logging.csproj", "BuilidingBlocks/Common.Logging/"]
 RUN dotnet restore "Services/Catelog/Catelog.API/Catelog.API.csproj"
 COPY . .
 WORKDIR "/src/Services/Catelog/Catelog.API"

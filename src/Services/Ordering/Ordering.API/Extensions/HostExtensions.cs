@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace Ordering.API.Extensions
 {
     public static class HostExtensions
     {
-        public static IHost MigrateDB<TContext>(this IHost host, Action<TContext, IServiceProvider> seeder, int? retry = 0) where TContext:DbContext
+        public static IHost MigrateDB<TContext>(this IHost host, Action<TContext, IServiceProvider> seeder) where TContext:DbContext
         {
-            int retries = retry.Value;
+           
 
             var scope = host.Services.CreateScope();
             
@@ -23,16 +24,21 @@ namespace Ordering.API.Extensions
                 var context = serviceP.GetService<TContext>();
                 try
                 {
-                    InvokeSeeder<TContext>(seeder, context, serviceP);
+                var retryP = Policy.Handle<SqlException>()
+                     .WaitAndRetry(
+                            retryCount: 5,
+                            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                            onRetry: (exception, retryCount, context) =>
+                            {
+                                logger.LogError($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+                            });
+
+                retryP.Execute(() => InvokeSeeder<TContext>(seeder, context, serviceP));
+                
                 }
                 catch (SqlException ex)
                 {
-                    retries++;
-                    if (retries < 50)
-                    {
-                        System.Threading.Thread.Sleep(2000);
-                        MigrateDB<TContext>(host, seeder, retries);
-                    }
+                logger.LogError("Error in MigrationDB");
                 }
             return host;
         }

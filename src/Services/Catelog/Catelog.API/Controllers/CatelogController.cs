@@ -2,13 +2,13 @@
 using Catelog.API.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+//using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
+using Serilog;
 namespace Catelog.API.Controllers
 {
     [Route("api/[controller]")]
@@ -17,9 +17,9 @@ namespace Catelog.API.Controllers
     {
 
         private readonly IProductRepository repo;
-        private readonly ILogger<CatelogController> logger;
+        private readonly ILogger logger;
 
-        public CatelogController(IProductRepository repo, ILogger<CatelogController> logger)
+        public CatelogController(IProductRepository repo, ILogger logger)
         {
             this.repo = repo;
             this.logger = logger;
@@ -38,10 +38,11 @@ namespace Catelog.API.Controllers
         [ProducesResponseType(typeof(Product), (int) HttpStatusCode.OK)]
         public async Task<ActionResult<Product>> GetByProductId(string id)
         {
+            logger.Information("GetByProductId call");
             var prod = await repo.GetProduct(id);
             if (prod==null)
             {
-                logger.LogInformation("Not Found");
+                logger.Information("Not Found");
                 return NotFound();
             }
             return Ok(prod);
@@ -51,6 +52,7 @@ namespace Catelog.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string category)
         {
+            logger.Information("GetByCategory call");
             var products = await repo.GetProductByCategory(category);
             return Ok(products);
         }
@@ -59,6 +61,7 @@ namespace Catelog.API.Controllers
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product)
         {
+            logger.Information("Create product call");
             await repo.CreateProduct(product);
 
             return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
@@ -68,6 +71,7 @@ namespace Catelog.API.Controllers
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateProduct([FromBody] Product product)
         {
+            logger.Information("Update product call");
             return Ok(await repo.UpdateProduct(product));
         }
 
@@ -75,6 +79,7 @@ namespace Catelog.API.Controllers
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteProductById(string id)
         {
+            logger.Information("Delete product call");
             return Ok(await repo.DeleteProduct(id));
         }
     }

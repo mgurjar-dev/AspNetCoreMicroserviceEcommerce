@@ -17,6 +17,7 @@ using OpenTelemetry.Trace;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,10 +45,11 @@ namespace Catelog.API
             services.AddScoped<IProductRepository, ProductRepository>();
 
             services.AddOpenTelemetryTracing(config => config
-
+               .AddAspNetCoreInstrumentation()
                .AddHttpClientInstrumentation()
-               .AddSource(nameof(CatelogController))
-               .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CatalogTelemetry"))
+               
+               //.AddSource(nameof(CatelogController))
+               //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("CatalogTelemetry"))
                .AddMongoDBInstrumentation()
                .AddConsoleExporter()
                .AddZipkinExporter(o =>
@@ -66,6 +68,8 @@ namespace Catelog.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+            Activity.ForceDefaultIdFormat = true;
             logger.LogInformation("Starting catelog api");
             if (env.IsDevelopment())
             {

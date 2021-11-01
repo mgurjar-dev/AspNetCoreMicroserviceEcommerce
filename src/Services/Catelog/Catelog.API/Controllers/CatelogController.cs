@@ -9,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Serilog;
+using System.Diagnostics;
+
 namespace Catelog.API.Controllers
 {
     [Route("api/[controller]")]
@@ -29,7 +31,10 @@ namespace Catelog.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<Product>), (int) HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
+            //Activity act = new Activity("GetProducts");
+            //act.Start();
             var products = await repo.GetProducts();
+            //act.Stop();
             return Ok(products);
         }
 

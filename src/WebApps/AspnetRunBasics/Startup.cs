@@ -14,6 +14,7 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Trace;
+using System.Diagnostics;
 
 namespace AspnetRunBasics
 {
@@ -34,7 +35,9 @@ namespace AspnetRunBasics
         {
 
             services.AddHttpClient<ICatalogService, CatalogService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"]));
+                c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"])
+                
+                );
             services.AddHttpClient<IBasketService, BasketService>(c =>
                 c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"]));
             services.AddHttpClient<IOrderService, OrderService>(c =>
@@ -45,13 +48,13 @@ namespace AspnetRunBasics
                     .AddUrlGroup(new Uri(Configuration["ApiSettings:GatewayAddress"]), "Ocelot API Gw", HealthStatus.Degraded);
 
             services.AddOpenTelemetryTracing(config => config
-                
-                .AddHttpClientInstrumentation()
-                .AddSource(nameof(CatalogService))
-                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ClientTelemetry"))
                 .AddAspNetCoreInstrumentation()
-                .AddSqlClientInstrumentation()
-                .AddMongoDBInstrumentation()
+                .AddHttpClientInstrumentation()
+                //.AddSource(nameof(CatalogService))
+                //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ClientTelemetry"))
+                //.AddAspNetCoreInstrumentation()
+                //.AddSqlClientInstrumentation()
+                //.AddMongoDBInstrumentation()
                 .AddConsoleExporter()
                 .AddZipkinExporter(o =>
                 {
@@ -65,6 +68,8 @@ namespace AspnetRunBasics
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+            Activity.ForceDefaultIdFormat = true;
             logger.LogInformation("Starting app basics");
             if (env.IsDevelopment())
             {

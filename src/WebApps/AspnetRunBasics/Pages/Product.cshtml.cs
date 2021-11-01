@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AspnetRunBasics.Models;
@@ -29,6 +30,8 @@ namespace AspnetRunBasics
 
         public async Task<IActionResult> OnGetAsync(string categoryName)
         {
+            //Activity act = new Activity("GetProduct");
+            //act.Start();
             var productList = await _catalogService.GetCatalog();
             CategoryList = productList.Select(p => p.Category).Distinct();
 
@@ -41,7 +44,7 @@ namespace AspnetRunBasics
             {
                 ProductList = productList;
             }
-
+            //act.Stop();
             return Page();
         }
 

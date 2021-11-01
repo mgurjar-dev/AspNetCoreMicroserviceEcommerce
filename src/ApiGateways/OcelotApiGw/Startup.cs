@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +20,28 @@ namespace OcelotApiGw
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOcelot().AddCacheManager(s=>s.WithDictionaryHandle());
+            //services.AddOpenTelemetryTracing(config => config
+
+            //  .AddHttpClientInstrumentation()
+            //  //.AddSource(nameof(CatelogController))
+            //  .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("GatewayTelemetry"))
+            //  .AddConsoleExporter()
+            //  .AddZipkinExporter(o =>
+            //  {
+            //      o.Endpoint = new Uri(Configuration["ApiSettings:ZipkinUrl"]);
+
+            //  })
+            //  );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

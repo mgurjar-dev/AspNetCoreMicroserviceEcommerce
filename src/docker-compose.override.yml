@@ -127,6 +127,7 @@ services:
     container_name: ocelotapigw
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:ZipkinUrl=http://zipkin:9411/api/v2/spans"
     depends_on:
         - catelog.api
         #- basket.api
